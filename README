@@ -1,1 +1,6 @@
-Script to get a quote converted to any currency
+- Script to get a quote converted to any currency, initial snippets copied from:
+ http://digitalpbk.com/stock/google-finance-get-stock-quote-realtime
+ https://raw.github.com/gabrield/python-currencyconverter/master/currencyconverter.py
+
+- Right now the quote and currencies are hardcoded
+
