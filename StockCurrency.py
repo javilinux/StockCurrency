@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-#http://digitalpbk.com/stock/google-finance-get-stock-quote-realtime
-#https://raw.github.com/gabrield/python-currencyconverter/master/currencyconverter.py
-
 import urllib2
 import json
 import time
