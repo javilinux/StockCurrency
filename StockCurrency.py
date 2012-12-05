@@ -32,6 +32,11 @@ class GoogleFinanceAPI:
 if __name__ == "__main__":
     c = GoogleFinanceAPI()
     d = CurrencyConverter()
+    default_shares=1
+    shares = raw_input('Shares Quantity (%s'%default_shares + "): ")
+    if not shares:
+     shares = default_shares
+    shares = int(shares)
     quote = c.get("RHT","NYSE")
     print "RHT Quote" + quote["l_cur"]
     quoteRHT= float(quote["l_cur"])
@@ -39,4 +44,5 @@ if __name__ == "__main__":
     print "USD/EUR rate " + str(rate)
     quoteEur = float(quoteRHT*rate)
     print "RHT Stock price in Eur: " + str(quoteEur)
-    
+    total = float(quoteRHT*rate*shares)
+    print "Total Value for "+str(shares)+" shares is: "+str(total)+" Euros"
