@@ -4,18 +4,27 @@ import urllib2
 import json
 import time
 import re
+import datetime
+import requests
 
-class CurrencyConverter:
-    def __init__(self): 
-        self.prefix = "http://www.google.com/ig/calculator?hl=en&q="
- 
-    def convert(self,currencyf,currencyt):
-	url = self.prefix+currencyf+"%3D%3F"+currencyt
-        u = urllib2.urlopen(url)
-        content = u.read()
-	result = re.search(".*rhs: \"(\d\.\d*)", content)
-        return float(result.group(1))
-  
+
+def get_currency_rate(currency, rate_in):
+  base_url = 'http://api.fixer.io/latest'
+  query = base_url + '?base=%s&symbols=%s' % (currency, rate_in)
+  try:
+    response = requests.get(query)
+    # print("[%s] %s" % (response.status_code, response.url))
+    if response.status_code != 200:
+      response = 'N/A'
+      return response
+    else:
+      rates = response.json()
+      rate_in_currency = rates["rates"][rate_in]
+      return rate_in_currency
+  except requests.ConnectionError as error:
+    print error
+    sys.exit(1)
+
 class GoogleFinanceAPI:
     def __init__(self):
         self.prefix = "http://finance.google.com/finance/info?client=ig&q="
@@ -31,18 +40,14 @@ class GoogleFinanceAPI:
         
 if __name__ == "__main__":
     c = GoogleFinanceAPI()
-    d = CurrencyConverter()
-    default_shares=1
-    shares = raw_input('Shares Quantity (%s'%default_shares + "): ")
-    if not shares:
-     shares = default_shares
-    shares = int(shares)
     quote = c.get("RHT","NYSE")
-    print "RHT Quote" + quote["l_cur"]
+    print "RHT Quote " + quote["l_cur"]
     quoteRHT= float(quote["l_cur"])
-    rate = d.convert("USD","EUR")
+    rate = get_currency_rate('USD', 'EUR')
     print "USD/EUR rate " + str(rate)
     quoteEur = float(quoteRHT*rate)
     print "RHT Stock price in Eur: " + str(quoteEur)
-    total = float(quoteRHT*rate*shares)
-    print "Total Value for "+str(shares)+" shares is: "+str(total)+" Euros"
+    now = datetime.datetime.now()
+    lineData = now.strftime("%Y-%m-%d")+":"+quote["l_cur"]+":"+str(rate)+":"+str(quoteEur)+"\n"
+    f = open('HistoricalQuotes.txt','a')
+    f.write(lineData)
